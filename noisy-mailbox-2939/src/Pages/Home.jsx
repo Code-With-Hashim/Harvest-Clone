@@ -20,7 +20,9 @@ import {
     Tab,
     TabPanel
 } from '@chakra-ui/react'
-import { CheckIcon } from '@chakra-ui/icons'
+import { ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons'
+import Footer from '../Components/Footer'
+import Navbar from '../Components/Navbar'
 
 
 
@@ -71,25 +73,26 @@ const learningFeatures = [
     {
         link : "https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/homepage/illo-75-folder.svg",
         head : 'Guides and Templates',
-        linke : 'Learn how to introduce your team to time tracking and make the most of Harvest'
+        text : 'Learn how to introduce your team to time tracking and make the most of Harvest'
     },
     {
         link : "https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/homepage/illo-75-laptop.svg",
         head : 'Webiners',
-        linke : 'Watch a quick intro to Harvest or Signup for a live session wiht one of our Experts'
+        text : 'Watch a quick intro to Harvest or Signup for a live session wiht one of our Experts'
     },
     {
-        link : "https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/homepage/illo-75-laptop.svg",
-        head : 'Webiners',
-        linke : 'Watch a quick intro to Harvest or Signup for a live session wiht one of our Experts'
-    }
+        link : "https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/homepage/illo-75-help.svg",
+        head : 'Help Centers',
+        text : 'Find the answers to all of your question or get in touch with one of our friendly Experts.'
+    },
 
 ]
 
 
-
 export default function Home() {
     return (
+        <>
+        <Navbar />
         <Box zIndex={1} height="auto" bgColor="orange.50">
             <SimpleGrid pt={"10rem"} columns={2}>
                 <Box noOfLines={3} textAlign={"left"} ml="10" w={'75%'} >
@@ -205,27 +208,44 @@ export default function Home() {
                 <Button my='3rem' fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Meet Our Customers</Button>
             </Box>
             <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"95%"} m="auto" mb={10} />
-            <SimpleGrid justifyContent={'center'} alignItems="center" columns={2}  w={'95%'} m='auto'> 
-                <Box  w='80%' textAlign={'left'}>
+            <SimpleGrid justifyContent={'center'} alignItems='center'  columns={2}  w={'95%'} m='auto'> 
+                <Box w='80%' textAlign={'left'}>
                 <Text as='b' color="rgba(250,93,0,100%)" fontSize="xl">LEARNING RESOURCES</Text>
                 <Text noOfLines={2} fontSize={'5xl'}>Supporting your team along the way</Text >
                 </Box>
                 <Box>
-                <VStack h='100%' spacing={"3rem"}>
+                <VStack h='100%' spacing={"2rem"}>
                         {
-                            content.map((i) => <HStack cursor={"pointer"} py="6"  spacing={8} px={6} w="100%">
-                                <Divider h='0.5' bgColor={"rgba(250,93,0,100%)"} />
+                            learningFeatures.map((i) => <HStack cursor={"pointer"} py='4' borderTop = '1px solid rgba(250,93,0,100%)'   w="90%">
+                                
                                 <Image src={i.link} />
                                 <Box textAlign={'left'}>
-                                    <Text fontSize="xl" as='b'>{i.head}</Text>
-                                    <Text noOfLines={2}>{i.text}</Text>
+                                    <Text fontSize="2xl">{i.head}</Text>
+                                    <Text fontSize='xl' noOfLines={2}>{i.text}</Text>
                                 </Box>
-                                <Divider />
+                                <ArrowForwardIcon w={8} h={8} color='rgba(250,93,0,100%)' />
                             </HStack>)
                         }
                     </VStack>
                 </Box>
             </SimpleGrid>
+            <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"100%"} m="auto"  />
+            <SimpleGrid w='100%' spacing='20rem' py={'5rem'}  m='auto' columns={2} bgColor={'white'}>
+                <Box w='90%' m='auto'  textAlign={'left'}>
+                    <Text fontSize={'4xl'}>Start tracking time today</Text>
+                    <Text py='8' fontSize={'3xl'}>Join 70,000+ Companies spending their time wisely with Harvest</Text>
+                    <Button fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
+                    <Box display='flex' alignItems={'center'}>
+                    <Text color={'gray.500'} mt={3}>Free 30-day trial.
+                        No credit card required.</Text>
+                </Box>
+                    </Box>
+                <Box>
+                    <Image src='https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/illoglyphs/footer-illo-comp.svg' />
+                </Box>
+            </SimpleGrid>
+            <Footer />
         </Box>
+        </>
     )
 }
