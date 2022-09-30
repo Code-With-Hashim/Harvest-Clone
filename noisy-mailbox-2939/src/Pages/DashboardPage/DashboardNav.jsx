@@ -19,7 +19,7 @@ export default function DashboardNav() {
     return (
         <Box bgColor='rgba(250,93,0,100%)'>
             <Flex px='6rem' justifyContent='space-around' alignItems={'center'}>
-                <Box  color={'white'} as='b' w='50%' display={'flex'} justifyContent='space-around' alignItems={'center'} fontSize='sm'>
+                <Box  color={'white'} as='b' w='50%' display={'flex'} justifyContent={{base : 'space-around', lg : "space-between"}} alignItems={'center'} fontSize='sm'>
                     {
                         link.map((i) => <NavLink to={i.path} className={({isActive}) => {
                             return isActive ? Styles.active : Styles.default

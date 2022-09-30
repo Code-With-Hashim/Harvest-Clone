@@ -5,7 +5,6 @@ import {
     Image,
     HStack,
     Button,
-    ButtonGroup,
     Divider,
     Flex,
     Spacer,
@@ -18,7 +17,8 @@ import {
     TabList,
     TabPanels,
     Tab,
-    TabPanel
+    TabPanel,
+    Show,
 } from '@chakra-ui/react'
 import { ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons'
 import Footer from '../Components/Footer'
@@ -94,8 +94,8 @@ export default function Home() {
         <>
         <Navbar />
         <Box zIndex={1} height="auto" bgColor="orange.50">
-            <SimpleGrid pt={"10rem"} columns={2}>
-                <Box noOfLines={3} textAlign={"left"} ml="10" w={'75%'} >
+            <SimpleGrid pt={"10rem"} columns={{base : 1 , lg :2}}>
+                <Box noOfLines={3} textAlign={"left"} ml="10" w={{base : '90%' , lg : '75%'}} >
                     <Text color="orange.400" fontSize="sm">SEE WHY 70,000+ COMPANIES TRACK TIME WITH HARVEST</Text>
                     <Text noOfLines={3} fontFamily={"Monarch,Georgia ,Times New Roman,serif"} fontSize="5xl">Finally, time tracking your team actually wants to use</Text>
                     <HStack mt={5} spacing={3}>
@@ -113,12 +113,12 @@ export default function Home() {
                         <Text><b>Invoicing & Payments.   </b>
                             Turn tracked time into invoices. Accept online payments. Sync with QuickBooks and Xero.</Text>
                     </HStack>
-                    <ButtonGroup mt={7} spacing={5}>
-                        <Button fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
-                        <Button fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"} _hover={{
+                    <Box display={'grid'} gap='2' gridTemplateColumns={{base : 'repeat(1,1fr)', md : 'repeat(2,1fr)' , lg : 'repeat(2,1fr)'}}  mt={7} spacing={5}>
+                        <Button  fontSize={'xl'} borderRadius={15}  py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
+                        <Button  fontSize={'xl'} borderRadius={15}  py="30px" colorScheme="black" bgColor={"black"} _hover={{
                             bgColor: "white", color: "black", border: '1px solid black'
                         }}>See Pricing</Button>
-                    </ButtonGroup>
+                    </Box>
                     <Text color={'gray.500'} mt={3}>Free 30-day trial.
                         No credit card required.</Text>
                 </Box>
@@ -129,19 +129,21 @@ export default function Home() {
             <HStack spacing={5} ml={10} mt={'20px'} >
                 <Text fontSize={'xl'} color={'orange.500'}>70,000+</Text>
                 <Text fontSize={'lg'} color="gray.500">companies track time with Harvest</Text>
-                <Divider h="0.5" bgColor="rgba(250,93,0,100%);" w={"65%"} m="auto" />
+                <Show above='lg'> <Divider h="0.5" bgColor="rgba(250,93,0,100%);" w={"65%"} m="auto" /></Show>
             </HStack>
+            <Show above='lg'>
             <Flex py={"8"} w={'95%'} m="auto">
                 {
                     brandeImageLink.map((i) => (<><Image src={i.link} /> <Spacer /></>))
                 }
             </Flex>
+            </Show>
             <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"100%"} />
-            <Grid px="12" mb="5rem" py="20" gap={'2rem'} templateColumns='repeat(3, 1fr)'>
+            <Grid px="12" mb="5rem" py="20" gap={'2rem'} templateColumns={{base : 'repeat(1, 1fr)' , lg : 'repeat(3, 1fr)' }} >
                 <GridItem colSpan={1}>
-                    <VStack h='100%' spacing={"3rem"}>
+                    <VStack h='100%' spacing={"3rem"} >
                         {
-                            content.map((i) => <HStack cursor={"pointer"} py="6" borderRadius={20} spacing={8} px={6} w="100%" border={'1px solid rgba(250,93,0,100%)'} _hover={{ bgColor: "orange.100" }}>
+                            content.map((i) => <HStack cursor={"pointer"} py="6" borderRadius={20} spacing={8} px={6} w="full" border={'1px solid rgba(250,93,0,100%)'} _hover={{ bgColor: "orange.100" }}>
                                 <Image src={i.link} />
                                 <Box textAlign={'left'}>
                                     <Text fontSize="xl" as='b'>{i.head}</Text>
@@ -150,23 +152,24 @@ export default function Home() {
                             </HStack>)
                         }
                     </VStack>
-                    <Button pos='relative' right="4rem" fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Discover all features</Button>
+                    <Show above='lg'><Button pos='relative' right="4rem" fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Discover all features</Button></Show>
                 </GridItem>
 
-                <GridItem h="90%" borderRadius={10} colSpan={2} border={"1px solid black"}>
-                    <Image borderRadius={10} src="https://www.getharvest.com/hs-fs/hubfs/screenshot-home-timesheets.png?width=1700&name=screenshot-home-timesheets.png"></Image>
+                <GridItem h="90%" w="96%" borderRadius={10} colSpan={2} border={"1px solid black"}>
+                    <Image w='full' borderRadius={10} h='full' src="https://www.getharvest.com/hs-fs/hubfs/screenshot-home-timesheets.png?width=1700&name=screenshot-home-timesheets.png"></Image>
                 </GridItem>
+                <Show below='lg'><Button w='full' m='auto'   fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Discover all features</Button></Show>
             </Grid>
             <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"95%"} m="auto" mb={10} />
-            <SimpleGrid py="5rem" columns={2}>
-                <Box>
-                    <Image src='https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/illustrations/integrations-home.svg' />
+            <SimpleGrid w={{base :'90%'}} m='auto' py="5rem" columns={{lg : 2}}>
+                <Box w={{base : '60%'}} m='auto' >
+                    <Image w='full' src='https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/illustrations/integrations-home.svg' />
                 </Box>
-                <Box letterSpacing={2} w='90%' textAlign={'left'}>
+                <Box py={{base : 2}} letterSpacing={2} w='full' textAlign={'left'}>
                     <Text as='b' color="rgba(250,93,0,100%)" fontSize="xl">INTEGRATION</Text>
                     <Heading py='5' fontFamily={'MuotoWeb,sans-serif'}>Integrated with the tools your team already knows and loves</Heading>
                     <Text fontSize="2xl">Your favorite apps work seamlessly with Harvest so you can keep projects on track however you work.</Text>
-                    <Button my='3rem' fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Browse Integration</Button>
+                    <Button w={{base : 'full', lg : 'auto'}} my='3rem' fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Browse Integration</Button>
                 </Box>
 
             </SimpleGrid>
@@ -182,13 +185,19 @@ export default function Home() {
                     <Tabs variant={'unstyled'} defaultIndex={0}>
                         <TabPanels>
                             {
-                                buttonSlideData.map((i) => <TabPanel display={'flex'} columns='2' columnGap={"2rem"}>
-                                    <Box noOfLines={9} fontSize={'3xl'}>
+                                buttonSlideData.map((i) => <TabPanel w='full' display={{base : 'grid' , lg : 'flex'}}  columnGap={"2rem"}>
+                                    <Show above='lg'> <Box noOfLines={9} fontSize={'3xl'}>
                                         <Text >{i.text}</Text>
                                         <Heading mt='10' as='h5' fontSize={'xl'}>{i.writer}</Heading>
                                     </Box>
-                                    <Divider h="auto" bgColor={"rgba(250,93,0,100%);"} w={"0.5"} orientation='vertical' />
-                                    <Image src={i.img} />
+                                    
+                                    <Divider h="auto" bgColor={"rgba(250,93,0,100%);"} w={"0.5"} orientation='vertical' /></Show >
+                                    <Image w='100%' src={i.img} />
+                                    <Show below='lg'> <Box noOfLines={9} my='4' fontSize={'3xl'}>
+                                        <Text >{i.text}</Text>
+                                        <Heading mt='10' as='h5' fontSize={'xl'}>{i.writer}</Heading>
+                                    </Box>
+                                    </Show>
 
 
                                 </TabPanel>)
@@ -205,20 +214,20 @@ export default function Home() {
 
                     <Divider h="auto" bgColor={"rgba(250,93,0,100%);"} w={"0.5"} orientation='vertical' />
                 </Stack>
-                <Button my='3rem' fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Meet Our Customers</Button>
+                <Button w={{base : 'full', lg : 'auto'}} my='3rem' fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="black" bgColor={"black"}>Meet Our Customers</Button>
             </Box>
             <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"95%"} m="auto" mb={10} />
-            <SimpleGrid justifyContent={'center'} alignItems='center'  columns={2}  w={'95%'} m='auto'> 
+            <SimpleGrid justifyContent={'center'} alignItems='center'  columns={{base :1, lg : 2}}  w={'95%'} m='auto'> 
                 <Box w='80%' textAlign={'left'}>
                 <Text as='b' color="rgba(250,93,0,100%)" fontSize="xl">LEARNING RESOURCES</Text>
-                <Text noOfLines={2} fontSize={'5xl'}>Supporting your team along the way</Text >
+                <Text noOfLines={2} my={{base : 5 , lg : 'auto'}} fontSize={{base : '3xl' , lg : '2xl'}}>Supporting your team along the way</Text >
                 </Box>
                 <Box>
                 <VStack h='100%' spacing={"2rem"}>
                         {
                             learningFeatures.map((i) => <HStack cursor={"pointer"} py='4' borderTop = '1px solid rgba(250,93,0,100%)'   w="90%">
                                 
-                                <Image src={i.link} />
+                                <Show above='lg'><Image src={i.link} /></Show>
                                 <Box textAlign={'left'}>
                                     <Text fontSize="2xl">{i.head}</Text>
                                     <Text fontSize='xl' noOfLines={2}>{i.text}</Text>
@@ -230,19 +239,21 @@ export default function Home() {
                 </Box>
             </SimpleGrid>
             <Divider h="0.5" bgColor={"rgba(250,93,0,100%);"} w={"100%"} m="auto"  />
-            <SimpleGrid w='100%' spacing='20rem' py={'5rem'}  m='auto' columns={2} bgColor={'white'}>
+            <SimpleGrid w='100%' spacing='20rem' py={'5rem'}  m='auto' columns={{base :1, lg : 2}}  bgColor={'white'}>
                 <Box w='90%' m='auto'  textAlign={'left'}>
                     <Text fontSize={'4xl'}>Start tracking time today</Text>
-                    <Text py='8' fontSize={'3xl'}>Join 70,000+ Companies spending their time wisely with Harvest</Text>
-                    <Button fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
+                    <Text py='8' fontSize={{ base : '2xl' , lg : '3xl'}}>Join 70,000+ Companies spending their time wisely with Harvest</Text>
+                    <Button w={{base : 'full' ,lg : 'auto'}} fontSize={'xl'} borderRadius={15} px={10} py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
                     <Box display='flex' alignItems={'center'}>
                     <Text color={'gray.500'} mt={3}>Free 30-day trial.
                         No credit card required.</Text>
                 </Box>
                     </Box>
-                <Box>
+                <Show above='lg'><Box>
                     <Image src='https://www.getharvest.com/hubfs/raw_assets/public/harvest-theme/images/illoglyphs/footer-illo-comp.svg' />
                 </Box>
+                </Show>
+
             </SimpleGrid>
             <Footer />
         </Box>
