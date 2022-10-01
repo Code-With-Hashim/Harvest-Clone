@@ -12,8 +12,12 @@ import {
 
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons"
 import { FaAndroid, FaApple } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
 
 export default function Menubutton() {
+
+    const Navigate = useNavigate()
+
     return (
         <Accordion pos='fixed' w='full' zIndex={2} bgColor='rgba(29,30,28,1.0)' allowToggle>
             <AccordionItem  autoFocus={false} border="none">
@@ -46,10 +50,10 @@ export default function Menubutton() {
                     <Divider my="5"/>
                     </Box>
                     <HStack >
-                        <Button _hover={{color : 'rgba(250,93,0,100%)'}} fontSize='xl' w='full' color="white" bgColor="gray" colorScheme="black">
+                        <Button  onClick={()=> Navigate('/harvest/dashboard/time')} _hover={{color : 'rgba(250,93,0,100%)'}} fontSize='xl' w='full' color="white" bgColor="gray" colorScheme="black">
                             Sign in
                         </Button>
-                        <Button _hover={{color : 'rgba(250,93,0,100%)'}} fontSize='xl' w='full' color="white" bgColor="gray" colorScheme="black">
+                        <Button onClick={()=> Navigate('/signup')} _hover={{color : 'rgba(250,93,0,100%)'}} fontSize='xl' w='full' color="white" bgColor="gray" colorScheme="black">
                             Try Harvest Free
                         </Button>
                     </HStack>
