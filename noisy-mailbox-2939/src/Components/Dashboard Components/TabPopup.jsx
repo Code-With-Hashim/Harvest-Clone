@@ -11,12 +11,23 @@ import {
     Textarea,
     NumberInput,
     NumberInputField,
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableContainer,
+    VStack
 
 }
     from '@chakra-ui/react'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { useState } from 'react'
 import { AuthContext } from '../../Context/AuthContext'
+import axios from 'axios'
+import { useSearchParams } from "react-router-dom"
 
 const days = [
     { day: 'Mon', fullDay: 'Monday' },
@@ -30,30 +41,51 @@ const days = [
 ]
 
 
-
+const getData = (Day) => {
+    return axios.get(`https://harvest-json-server.onrender.com/${Day}`)
+}
 
 const initalState = {
-    ProjectName : '',
-    ClientName : 'Example ClientName',
-    ProjectDesign : '',
+    ProjectName: '',
+    ClientName: 'Example ClientName',
+    ProjectDesign: '',
+    notes : '',
+    timer : Number(0)
 }
 
 export default function TabPopUp() {
-    const [data, setData] = useState()
-    const { setDay } = useContext(AuthContext)
+    const { isDay , setDay } = useContext(AuthContext)
+    const [searchParams , setSearchParams] = useSearchParams()
+    const [getTask , setTask]  = useState([])
+    
 
+    useEffect(()=> {
+       
+        setSearchParams({day : isDay.toLowerCase() })
+        
+    },[isDay])
 
+    useEffect(()=> {
+        
+        getData(isDay.toLowerCase()).then((res)=> setTask(res.data))
+
+    },[isDay])
 
     const handelDay = (day) => {
         setDay(day)
     }
 
+    const handelSubmit = () => {
+
+    }
+
 
     return (
+        
         <Center>
             <Grid w='90%' m='auto' display={'grid'} gridTemplateColumns='repeat(6,1fr)'>
                 <GridItem colSpan={1}>
-                    <OpenModal />
+                    <OpenModal handelSubmit={handelSubmit}/>
                 </GridItem>
                 <GridItem colSpan={5}>
                     <Tabs isFitted>
@@ -63,12 +95,11 @@ export default function TabPopUp() {
                             }
                         </TabList>
                         <TabPanels >
-                            <TabPanel>
-                                
-                            </TabPanel>
-                            <TabPanel>
-                                <p>World</p>
-                            </TabPanel>
+                           {
+                            days.map((d) => <TabPanel>
+                                {getTask.length===0 ? <EmptyTabList /> : <TabDataList Data={getTask} />}
+                            </TabPanel>)
+                           }
                         </TabPanels>
                     </Tabs>
                 </GridItem>
@@ -87,25 +118,149 @@ function EmptyTabList() {
     )
 }
 
+
+const postData = (task,Day) => {
+    return axios.post(`https://harvest-json-server.onrender.com/${Day}`, task)
+}
+
 function OpenModal() {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const {isDay } = useContext(AuthContext)
+    const { isDay } = useContext(AuthContext)
     const [data, setData] = useState(initalState)
 
-    const handelData =(e)=> {
-        const {name , value} = e.target;
+    const handelData = (e) => {
+        const { name, value } = e.target;
 
-        setData({...data , [name] : value})
+        setData({ ...data, [name]: value })
     }
 
     const handelSubmit = () => {
-        console.log(data)
+        postData(data, isDay.toLowerCase())
+        .then((res)=>console.log(res))
+        .catch((err)=>console.log(err));
+        onClose()
+        
     }
 
     return (
         <>
             <Button onClick={onOpen} colorScheme={'green'} p='6' children={<AddIcon boxSize={'7'} />}></Button>
             <Center>
+                <Modal onClose={onClose} size={'xl'} isOpen={isOpen}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center>
+                        <ModalBody>
+                            <FormControl rowGap={2}>
+                                <FormLabel>Project/Task</
+                                FormLabel>
+                                <Select name='ProjectName' onChange={handelData} placeholder='Example Client'>
+                                    <option value={'Example Project'}>
+                                        Example Project
+                                    </option>
+                                </Select>
+                                <Select name='ProjectDesign' onChange={handelData} my='3' placeholder='Demo Design'>
+                                    <option >
+                                        Design
+                                    </option>
+                                    <option >
+                                        Marketing
+                                    </option>
+                                    <option >
+                                        Programming
+                                    </option >
+                                    <option >
+                                        Project Managment
+                                    </option>
+                                </Select>
+                                <Box my='3' display={'flex'} columnGap='5' >
+                                    <Textarea name={'notes'} onChange={handelData} resize={'none'} size='sm' placeholder='Notes' />
+                                    <NumberInput h='3' placeholder='0.00'>
+                                        <NumberInputField w='150px' h='80px' name='timer' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0.00' />
+                                    </NumberInput>
+                                </Box>
+                            </FormControl>
+                        </ModalBody>
+                        <ModalFooter display={'flex'} justifyContent='left' gap='5'>
+                            <Button onClick={handelSubmit} colorScheme={'green'}>Start timer</Button>
+                            <Button onClick={onClose}>Cancel</Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </Center>
+        </>
+    )
+}
+
+
+function TabDataList({Data}) {
+
+    const [data,setData] = useState(Data)
+
+    console.log(data)
+    
+
+    return (
+        <TableContainer>
+  <Table variant='simple'>
+    <Thead>
+    </Thead>
+    <Tbody>
+        {
+            Data.map((i) => <Tr>
+                <Td><VStack>
+                    <Text><b>{i.ProjectName} </b> ({i.ClientName})</Text>
+                    <Text textAlign={'left'} fontSize={'sm'}>{i.notes}</Text>
+                    </VStack></Td>
+                <Td>{i.ProjectDesign}</Td>
+                <Td>{i.timer}</Td>
+                <Td><Button>Start</Button></Td>
+                <Td><EditModal id={i.id}/></Td>
+            </Tr>)
+        }
+    </Tbody>
+    <Tfoot>
+      <Tr>
+        <Th></Th>
+        <Th>Total</Th>
+        <Th></Th>
+        <Th></Th>
+        <Th></Th>
+      </Tr>
+    </Tfoot>
+  </Table>
+</TableContainer>
+    )
+}
+
+function EditModal({id}) {
+const { isOpen, onOpen, onClose } = useDisclosure()
+const { isDay } = useContext(AuthContext)
+const [data, setData] = useState(initalState)
+
+const handelData = (e) => {
+    const { name, value } = e.target;
+
+    setData({ ...data, [name]: value })
+}
+
+const handelUpdate = () => {
+    axios.patch(`https://harvest-json-server.onrender.com/${isDay}/${id}`, data)
+    onClose()
+}
+
+const handelDelete = () => {
+    axios.delete(`https://harvest-json-server.onrender.com/${isDay}/${id}`);
+    onClose();
+    <TabPopUp></TabPopUp>;
+    <TabDataList></TabDataList>
+}
+
+
+    return (
+        <>
+        <Button onClick={onOpen} colorScheme={'green'} >Edit</Button>
+        <Center>
             <Modal onClose={onClose} size={'xl'} isOpen={isOpen}>
                 <ModalOverlay />
                 <ModalContent>
@@ -120,34 +275,36 @@ function OpenModal() {
                                 </option>
                             </Select>
                             <Select name='ProjectDesign' onChange={handelData} my='3' placeholder='Demo Design'>
-                                <option value='Design'>
+                                <option >
                                     Design
                                 </option>
-                                <option value='Marketing'>
+                                <option >
                                     Marketing
                                 </option>
-                                <option value='Programming'>
+                                <option >
                                     Programming
                                 </option >
-                                <option value='Project Managment'>
+                                <option >
                                     Project Managment
                                 </option>
                             </Select>
                             <Box my='3' display={'flex'} columnGap='5' >
-                                <Textarea resize={'none'} size='sm' placeholder='Notes' />
+                                <Textarea name='notes' onChange={handelData} resize={'none'} size='sm' placeholder='Notes' />
                                 <NumberInput h='3' placeholder='0.00'>
-                                    <NumberInputField w='150px' h='80px' fontSize='4xl' textAlign={'right'} placeholder='0.00' />
+                                    <NumberInputField w='150px' h='80px' name='timer' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0.00' />
                                 </NumberInput>
                             </Box>
                         </FormControl>
                     </ModalBody>
-                    <ModalFooter display={'flex'} justifyContent='left' gap='5'> 
-                        <Button onClick = {handelSubmit} colorScheme={'green'}>Start timer</Button>
+                    <ModalFooter display={'flex'} justifyContent='left' gap='5'>
+                        <Button onClick={handelUpdate} colorScheme={'green'}>Update timer</Button>
                         <Button onClick={onClose}>Cancel</Button>
+                        <Button colorScheme={'red'} onClick={handelDelete}>Delete</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-            </Center>
-        </>
+        </Center>
+    </>
     )
 }
+

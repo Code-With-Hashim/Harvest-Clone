@@ -23,6 +23,7 @@ import {
 import { ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons'
 import Footer from '../Components/Footer'
 import Navbar from '../Components/Navbar'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -90,6 +91,8 @@ const learningFeatures = [
 
 
 export default function Home() {
+
+    const Navigate = useNavigate()
     return (
         <>
         <Navbar />
@@ -114,7 +117,7 @@ export default function Home() {
                             Turn tracked time into invoices. Accept online payments. Sync with QuickBooks and Xero.</Text>
                     </HStack>
                     <Box display={'grid'} gap='2' gridTemplateColumns={{base : 'repeat(1,1fr)', md : 'repeat(2,1fr)' , lg : 'repeat(2,1fr)'}}  mt={7} spacing={5}>
-                        <Button  fontSize={'xl'} borderRadius={15}  py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
+                        <Button onClick={Navigate('/signup')} fontSize={'xl'} borderRadius={15}  py="30px" colorScheme="rgba(250,93,0,100%);">Try Harvest Free</Button>
                         <Button  fontSize={'xl'} borderRadius={15}  py="30px" colorScheme="black" bgColor={"black"} _hover={{
                             bgColor: "white", color: "black", border: '1px solid black'
                         }}>See Pricing</Button>
