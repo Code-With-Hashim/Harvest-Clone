@@ -75,9 +75,7 @@ export default function TabPopUp() {
         setDay(day)
     }
 
-    const handelSubmit = () => {
-
-    }
+  
 
 
     return (
@@ -85,7 +83,7 @@ export default function TabPopUp() {
         <Center>
             <Grid w='90%' m='auto' display={'grid'} gridTemplateColumns='repeat(6,1fr)'>
                 <GridItem colSpan={1}>
-                    <OpenModal handelSubmit={handelSubmit}/>
+                    <OpenModal />
                 </GridItem>
                 <GridItem colSpan={5}>
                     <Tabs isFitted>
@@ -249,11 +247,9 @@ const handelUpdate = () => {
 }
 
 const handelDelete = () => {
-    axios.delete(`https://harvest-mock-server-data.onrender.com/
-    ${isDay}/${id}`);
+    axios.delete(`https://harvest-mock-server-data.onrender.com/${isDay}/${id}`);
     onClose();
-    <TabPopUp></TabPopUp>;
-    <TabDataList></TabDataList>
+
 }
 
 

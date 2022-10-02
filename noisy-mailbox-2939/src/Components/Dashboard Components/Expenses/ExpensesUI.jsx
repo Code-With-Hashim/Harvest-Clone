@@ -125,8 +125,8 @@ export default function ExpensesUI() {
     <Thead bgColor={'teal.100'} color='black'>
       <Tr textAlign={'left'}>
         <Th>Date</Th>
-        <Th>into</Th>
-        <Th>multiply by</Th>
+        <Th>Project Category/Name</Th>
+        <Th>Amount</Th>
         <Th ></Th>
       </Tr>
     </Thead>
