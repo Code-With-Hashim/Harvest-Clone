@@ -16,28 +16,22 @@ import { FaGoogle } from "react-icons/fa";
 import axios from 'axios';
 import { NavLink } from "react-router-dom";
 
-const data = [
-    { title: 'First Name', type: 'text' },
-    { title: 'Last Name', type: 'text' },
-    { title: 'Company Name', type: 'text' },
-
-]
 
 const initalState = {
+    firstName:'',
+    lastName:'',
     email: "",
     password: "",
 }
 
 const PostUser = (formData) => {
 
-    return axios.post('https://reqres.in/api/register', formData)
+    return axios.post('https://authodegya.herokuapp.com/registeration', formData)
 
 }
 
 export default function Signup() {
-
-
-
+    
     const [formData, setFormData] = useState(initalState)
 
     const handelInput = (e) => {
@@ -46,14 +40,15 @@ export default function Signup() {
         setFormData({ ...formData, [name]: value })
     }
 
-    //https://reqres.in/api/register
+  
 
 
     const handelForm = () => {
         PostUser(formData).then((res) =>
-        // console.log('Alert')
-        alert('Succesfully Created Account'))
-        .catch((err) => console.log('wrong'))
+        alert('Succesfully Created Account')
+         
+        )
+        .catch((err) => console.log('Something is issue please refresh again'))
 
     }
 
@@ -76,15 +71,26 @@ export default function Signup() {
                     <Divider w='20%' h='0.4' bgColor='gray' orientation="horizontal" />
                 </Stack>
                 <Grid rowGap={3} templateRows={'repeat(5,1fr)'} templateColumns={'repeat(3,1fr)'}>
-                    {
-                        data.map((i) => <><GridItem colSpan={1}>
-                            <FormLabel>{i.title}</FormLabel>
-                        </GridItem>
-                            <GridItem colSpan={2}>
-                                <Input key={i.title} name={i.name} border='1px solid gray' bgColor="white" type={i.type} />
-                            </GridItem>
-                        </>)
-                    }
+                <GridItem colSpan={1}>
+                        <FormLabel>First Name</FormLabel>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                    <Input  onChange={handelInput} name='firstName' value={formData.firstName} border='1px solid gray' bgColor="white" type='text' />
+                    </GridItem>
+                
+                <GridItem colSpan={1}>
+                        <FormLabel>Last Name</FormLabel>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                    <Input colSpan={2} onChange={handelInput} name='lastName' value={formData.lastName} border='1px solid gray' bgColor="white" type='text' />
+                    </GridItem>
+                
+                <GridItem colSpan={1}>
+                        <FormLabel>Company Name</FormLabel>
+                    </GridItem>
+              <GridItem colSpan={2} >
+              <Input   border='1px solid gray' bgColor="white" type='text' />
+              </GridItem>
                     <GridItem colSpan={1}>
                         <FormLabel>Work Email</FormLabel>
                     </GridItem>
