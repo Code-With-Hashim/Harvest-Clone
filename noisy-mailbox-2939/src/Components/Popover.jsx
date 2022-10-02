@@ -13,8 +13,12 @@ import {
 
 } from '@chakra-ui/react'
 import UserAvatar from './UserAvatar'
+import { useContext } from 'react'
+import { AuthContext } from '../Context/AuthContext'
 
 export default function Trigger() {
+
+    const {token , setAuth} = useContext(AuthContext)
 
      const {isOpen , onClose , onToggle} = useDisclosure()
 
@@ -37,14 +41,14 @@ export default function Trigger() {
                     
                     <Box mx='5' as='b' my='2' display='flex' justifyContent={'space-between'} alignItems='center'>
                         <UserAvatar />
-                        <Text >User Name</Text>
+                        <Text >{token}</Text>
                     </Box>
                         <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>My Profile</Text>
                         <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>My Time Report</Text>
                         <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>Notification</Text>
                         <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>Refer a friend</Text>
                    <Divider />
-                   <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} my='4' px='2' py='1' >Sign Out</Text>
+                   <Text onClick={()=>setAuth(false)} _hover={{bgColor : 'black', color : 'white' , w : 'full' }} my='4' px='2' py='1' >Sign Out</Text>
                 </PopoverContent>
             </Portal>
         </Popover>

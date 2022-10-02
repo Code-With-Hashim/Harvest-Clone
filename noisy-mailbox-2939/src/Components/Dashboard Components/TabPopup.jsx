@@ -42,7 +42,7 @@ const days = [
 
 
 const getData = (Day) => {
-    return axios.get(`https://harvest-json-server.onrender.com/${Day}`)
+    return axios.get(`https://harvest-mock-server-data.onrender.com/${Day}`)
 }
 
 const initalState = {
@@ -63,7 +63,7 @@ export default function TabPopUp() {
        
         setSearchParams({day : isDay.toLowerCase() })
         
-    },[isDay])
+    },[isDay, setSearchParams])
 
     useEffect(()=> {
         
@@ -120,7 +120,7 @@ function EmptyTabList() {
 
 
 const postData = (task,Day) => {
-    return axios.post(`https://harvest-json-server.onrender.com/${Day}`, task)
+    return axios.post(`https://harvest-mock-server-data.onrender.com/${Day}`, task)
 }
 
 function OpenModal() {
@@ -195,9 +195,8 @@ function OpenModal() {
 
 function TabDataList({Data}) {
 
-    const [data,setData] = useState(Data)
 
-    console.log(data)
+
     
 
     return (
@@ -245,12 +244,13 @@ const handelData = (e) => {
 }
 
 const handelUpdate = () => {
-    axios.patch(`https://harvest-json-server.onrender.com/${isDay}/${id}`, data)
+    axios.patch(`https://harvest-mock-server-data.onrender.com/${isDay}/${id}`, data)
     onClose()
 }
 
 const handelDelete = () => {
-    axios.delete(`https://harvest-json-server.onrender.com/${isDay}/${id}`);
+    axios.delete(`https://harvest-mock-server-data.onrender.com/
+    ${isDay}/${id}`);
     onClose();
     <TabPopUp></TabPopUp>;
     <TabDataList></TabDataList>
