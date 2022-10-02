@@ -31,8 +31,10 @@ export default function SignIn() {
     }
 
     const handelClick =()=> {
-        getData(userData).then((res)=> setToken(res.data.login.firstName), setAuth(true))
-        .catch((err)=> alert('Kindly Check Credential'))
+        getData(userData).then((res) => setToken(res.data.login.firstName))
+        .then(() => setAuth(true))
+        .catch((err) => alert('Kindly Check your Credentials'))
+        
     }
 
     if(isAuth) {
