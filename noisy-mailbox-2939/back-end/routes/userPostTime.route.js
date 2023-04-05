@@ -14,7 +14,7 @@ userPostTimeRouter.get("/time" , userGetTime)
 
 userPostTimeRouter.delete("/time" , userDeleteTime)
 
-userPostTimeRouter.patch('/time' , userEditTime)
+userPostTimeRouter.patch('/time/:id' , userEditTime)
 
 
 module.exports = {userPostTimeRouter}

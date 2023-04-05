@@ -2,10 +2,12 @@ import { legacy_createStore, combineReducers, compose, applyMiddleware } from "r
 import thunk from 'redux-thunk'
 import { authReducer } from "./Reducers/authenticated.reducer";
 import { DayReducer } from "./Reducers/day.reducer";
+import { userPostReducer } from "./Reducers/time.reducer";
 
 const rootReducer = combineReducers({
     authReducer: authReducer,
-    dayReducer : DayReducer
+    dayReducer : DayReducer,
+    userTimerReducer : userPostReducer
 })
 
 const createComposer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

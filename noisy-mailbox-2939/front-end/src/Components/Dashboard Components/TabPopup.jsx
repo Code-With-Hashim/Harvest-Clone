@@ -1,4 +1,4 @@
-import { AddIcon } from '@chakra-ui/icons'
+import { AddIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
     Tabs, TabList, TabPanels, Tab, TabPanel, Box, Text, Button, Grid, GridItem, Center, useDisclosure, Modal,
     ModalOverlay,
@@ -19,17 +19,19 @@ import {
     Th,
     Td,
     TableContainer,
-    VStack
+    VStack,
+    Input
 
 }
     from '@chakra-ui/react'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { AuthContext } from '../../Context/AuthContext'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from "react-router-dom"
 import { setDate, setTabIndex } from '../../redux/Actions/day.action'
+import { GetTimer, PatchTimer, PostTimer } from '../../redux/Actions/timer.action'
 
 const days = [
     { day: 'Mon', fullDay: 'Monday' },
@@ -43,22 +45,20 @@ const days = [
 ]
 
 
-const getData = (Day) => {
-    return axios.get(`https://harvest-mock-server-data.onrender.com/${Day}`)
-}
-
 const initalState = {
-    ProjectName: '',
-    ClientName: 'Example ClientName',
-    ProjectDesign: '',
-    notes : '',
-    timer : Number(0)
+    clientProject: '',
+    clientBillable: '',
+    clientNotes : '',
+    clientPostTime : new Date().getTime(),
+    startPostTime : ''
 }
 
 export default function TabPopUp() {
     // const { isDay , setDay } = useContext(AuthContext)
     const [searchParams , setSearchParams] = useSearchParams()
+    const {token} = useSelector(({authReducer}) => authReducer)
     const {tabIndex , date} = useSelector(({dayReducer}) => dayReducer)
+    const {timerData ,success} = useSelector(({userTimerReducer}) => userTimerReducer)
     const [getTask , setTask]  = useState([])
     const dispatch = useDispatch()
     
@@ -66,8 +66,9 @@ export default function TabPopUp() {
     useEffect(()=> {
        
         setSearchParams({day : date })
+        dispatch(GetTimer(token))
         
-    },[date, setSearchParams])
+    },[date, setSearchParams , success])
 
     // useEffect(()=> {
         
@@ -100,6 +101,7 @@ export default function TabPopUp() {
       
     }
 
+    
 
 
     return (
@@ -119,7 +121,7 @@ export default function TabPopUp() {
                         <TabPanels >
                            {
                             days.map((d) => <TabPanel>
-                                {getTask.length===0 ? <EmptyTabList /> : <TabDataList Data={getTask} />}
+                                {timerData.length===0 ? <EmptyTabList /> : <TabDataList Data={timerData} />}
                             </TabPanel>)
                            }
                         </TabPanels>
@@ -141,28 +143,36 @@ function EmptyTabList() {
 }
 
 
-const postData = (task,Day) => {
-    return axios.post(`https://harvest-mock-server-data.onrender.com/${Day}`, task)
-}
-
 function OpenModal() {
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { token } = useSelector(({ authReducer }) => authReducer)
+    const dispatch = useDispatch()
 
     const [data, setData] = useState(initalState)
 
     const handelData = (e) => {
         const { name, value } = e.target;
 
+
         setData({ ...data, [name]: value })
     }
 
-    // const handelSubmit = () => {
-    //     postData(data, isDay.toLowerCase())
-    //     .then((res)=>console.log(res))
-    //     .catch((err)=>console.log(err));
-    //     onClose()
+    const handleStartTimer= () => {
+        const [minute , second] = data.startPostTime.split(':').map(Number)
+
+        if(second) {
+            data.startPostTime = minute * 60 + second
+        } else {
+            data.startPostTime = minute * 60
+        }
         
-    // }
+        dispatch(PostTimer(data , token))
+
+    }
+
+    
+
+    
 
     return (
         <>
@@ -176,12 +186,12 @@ function OpenModal() {
                             <FormControl rowGap={2}>
                                 <FormLabel>Project/Task</
                                 FormLabel>
-                                <Select name='ProjectName' onChange={handelData} placeholder='Example Client'>
+                                <Select name='clientProject' onChange={handelData} placeholder='Example Client'>
                                     <option value={'Example Project'}>
                                         Example Project
                                     </option>
                                 </Select>
-                                <Select name='ProjectDesign' onChange={handelData} my='3' placeholder='Demo Design'>
+                                <Select name='clientBillable' onChange={handelData} my='3' placeholder='Demo Design'>
                                     <option >
                                         Design
                                     </option>
@@ -196,15 +206,13 @@ function OpenModal() {
                                     </option>
                                 </Select>
                                 <Box my='3' display={'flex'} columnGap='5' >
-                                    <Textarea name={'notes'} onChange={handelData} resize={'none'} size='sm' placeholder='Notes' />
-                                    <NumberInput h='3' placeholder='0.00'>
-                                        <NumberInputField w='150px' h='80px' name='timer' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0.00' />
-                                    </NumberInput>
+                                    <Textarea name={'clientNotes'} onChange={handelData} resize={'none'} size='sm' placeholder='Notes' />
+                                        <Input maxLength={'4'} w='150px' h='80px' name='startPostTime' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0:00' />
                                 </Box>
                             </FormControl>
                         </ModalBody>
                         <ModalFooter display={'flex'} justifyContent='left' gap='5'>
-                            {/* <Button onClick={handelSubmit} colorScheme={'green'}>Start timer</Button> */}
+                            <Button onClick={handleStartTimer} colorScheme={'green'}>Start timer</Button>
                             <Button onClick={onClose}>Cancel</Button>
                         </ModalFooter>
                     </ModalContent>
@@ -217,9 +225,31 @@ function OpenModal() {
 
 function TabDataList({Data}) {
 
-
-
+    // const {success} = useSelector(({userTimerReducer}) => userTimerReducer)
+    const {token} = useSelector(({authReducer}) => authReducer)
+    const dispatch = useDispatch()
+    const clearInter = useRef()
+    const clearTimer = useRef(null)
     
+
+
+    function Timer(timer) {
+        const minute = Math.floor(timer / 60)
+
+        const second = timer % 60
+
+        return `${minute} : ${second}`
+    } 
+
+    const handleStartTime = (id, time) => {
+        
+    //    setInterval(() => {
+    //      dispatch(PatchTimer(id , time , token))
+    //     console.log(time)
+    //    }, 1000)
+
+        
+    }
 
     return (
         <TableContainer>
@@ -230,12 +260,12 @@ function TabDataList({Data}) {
         {
             Data.map((i) => <Tr>
                 <Td><VStack>
-                    <Text><b>{i.ProjectName} </b> ({i.ClientName})</Text>
-                    <Text textAlign={'left'} fontSize={'sm'}>{i.notes}</Text>
+                    <Text><b>{i.clientProject} </b> ({i.clientBillable})</Text>
+                    <Text textAlign={'left'} fontSize={'sm'}>{i.clientNotes}</Text>
                     </VStack></Td>
-                <Td>{i.ProjectDesign}</Td>
-                <Td>{i.timer}</Td>
-                <Td><Button>Start</Button></Td>
+                <Td>{i.clientBillable}</Td>
+                <Td>{Timer(i.startPostTime)}</Td>
+                <Td><Button onClick={() => handleStartTime(i._id , i.startPostTime)}>Start</Button></Td>
                 <Td><EditModal id={i.id}/></Td>
             </Tr>)
         }
@@ -285,7 +315,7 @@ const handelData = (e) => {
             <Modal onClose={onClose} size={'xl'} isOpen={isOpen}>
                 <ModalOverlay />
                 <ModalContent>
-                    {/* <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center> */}
+                    <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for </Text></Center>
                     <ModalBody>
                         <FormControl rowGap={2}>
                             <FormLabel>Project/Task</
@@ -311,16 +341,14 @@ const handelData = (e) => {
                             </Select>
                             <Box my='3' display={'flex'} columnGap='5' >
                                 <Textarea name='notes' onChange={handelData} resize={'none'} size='sm' placeholder='Notes' />
-                                <NumberInput h='3' placeholder='0.00'>
-                                    <NumberInputField w='150px' h='80px' name='timer' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0.00' />
-                                </NumberInput>
+                                    <Input w='150px' h='80px' name='timer' onChange={handelData} fontSize='4xl' textAlign={'right'} placeholder='0:00' />
                             </Box>
                         </FormControl>
                     </ModalBody>
                     <ModalFooter display={'flex'} justifyContent='left' gap='5'>
-                        {/* <Button onClick={handelUpdate} colorScheme={'green'}>Update timer</Button> */}
+                        <Button colorScheme={'green'}>Update timer</Button>
                         <Button onClick={onClose}>Cancel</Button>
-                        {/* <Button colorScheme={'red'} onClick={handelDelete}>Delete</Button> */}
+                        <Button colorScheme={'red'} >Delete</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

@@ -1,21 +1,20 @@
 const { userPostTimeModel } = require('../models/userPostTime.model')
 
 const userPostTime = async (req, res) => {
-    const { clientProject, clientBillable, clientNotes } = req.body
-
-    const clientPostTime = new Date().getTime();
+    const { clientProject, clientBillable, clientNotes, clientPostTime, startPostTime } = req.body
 
 
     // console.log(clientPostTime)
 
     try {
 
-       const isSuccess =  await userPostTimeModel.create({
+        const isSuccess = await userPostTimeModel.create({
             userId: req.userId,
             clientProject,
             clientBillable,
             clientNotes,
-            clientPostTime
+            clientPostTime,
+            startPostTime
         })
         // console.log(success)
 
@@ -49,24 +48,40 @@ async function userGetTime(req, res) {
 async function userEditTime(req, res) {
 
     const { id } = req.params
-    const { clientProject, clientBillable, clientNotes, clientPostTime } = req.body
+    // console.log(id)
+    let { clientProject, clientBillable, clientNotes, clientPostTime, startPostTime } = req.body
+    let clearTime = null
 
     if (clientProject === '') clientProject = undefined
     if (clientBillable === '') clientBillable = undefined
     if (clientNotes === '') clientNotes = undefined
     if (clientPostTime === '') clientPostTime = undefined
+    if (startPostTime === '') startPostTime = undefined
+
+
 
 
     try {
 
-        await userPostTimeModel.findByIdAndUpdate({ id: id }, {
-            clientBillable,
-            clientNotes,
-            clientPostTime,
-            clientProject
-        })
-
-        res.json({ message: 'Time is Edit Successfully' })
+        if (startPostTime) {
+            clearTime = setInterval(async () => {
+                startPostTime = startPostTime - 1
+                if (startPostTime < 0) {
+                    return clearInterval(clearTime)
+                } else {
+                    const data = await userPostTimeModel.findByIdAndUpdate({ _id: id }, {
+                        clientBillable,
+                        clientNotes,
+                        clientPostTime,
+                        clientProject,
+                        startPostTime
+                    })
+                }
+                // console.log(startPostTime)
+            }, 1000)
+        }
+        
+         if (clearTime) res.json({ message: 'Time is Edit Successfully'  , time : startPostTime})
 
     } catch (error) {
         console.log(error)
@@ -77,6 +92,7 @@ async function userEditTime(req, res) {
 const userDeleteTime = async (req, res) => {
 
     const { id } = req.params
+
     try {
 
         await userPostTimeModel.findByIdAndDelete({ id: id })
