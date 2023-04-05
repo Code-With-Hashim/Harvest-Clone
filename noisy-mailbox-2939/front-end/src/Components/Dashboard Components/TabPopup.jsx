@@ -27,7 +27,9 @@ import { useContext, useEffect } from 'react'
 import { useState } from 'react'
 import { AuthContext } from '../../Context/AuthContext'
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from "react-router-dom"
+import { setDate, setTabIndex } from '../../redux/Actions/day.action'
 
 const days = [
     { day: 'Mon', fullDay: 'Monday' },
@@ -37,7 +39,7 @@ const days = [
     { day: 'Fri', fullDay: 'Friday' },
     { day: 'Sat', fullDay: 'Saturday' },
     { day: 'Sun', fullDay: 'Sunday' },
-    { day: 'Week', fullDay: 'Total Week' }
+    // { day: 'Week', fullDay: 'Total Week' }
 ]
 
 
@@ -56,28 +58,48 @@ const initalState = {
 export default function TabPopUp() {
     // const { isDay , setDay } = useContext(AuthContext)
     const [searchParams , setSearchParams] = useSearchParams()
+    const {tabIndex , date} = useSelector(({dayReducer}) => dayReducer)
     const [getTask , setTask]  = useState([])
+    const dispatch = useDispatch()
     
 
-    // useEffect(()=> {
+    useEffect(()=> {
        
-    //     setSearchParams({day : isDay.toLowerCase() })
+        setSearchParams({day : date })
         
-    // },[isDay, setSearchParams])
+    },[date, setSearchParams])
 
     // useEffect(()=> {
         
-    //     getData(isDay.toLowerCase()).then((res)=> setTask(res.data))
 
-    // },[isDay])
 
-    const handelDay = (day) => {
-        // setDay(day)
+    // },[date])
+
+    const handleTabsChange = (index) => {
+        dispatch(setTabIndex(index))
+        const getTime = searchParams.get('day')
+        const isDate = new Date(Number(getTime))
+
+       
+        const nextDate =  index - isDate.getDay() + 1
+            
+        isDate.setDate(isDate.getDate() + nextDate)
+
+
+        console.log(index)
+
+        dispatch(setDate(isDate.getTime()))
+
+        
+        setSearchParams({day : isDate.getTime() })
+
+        
     }
 
-    const handelSubmit = () => {
-
+    const handelSubmit = (val) => {
+      
     }
+
 
 
     return (
@@ -88,10 +110,10 @@ export default function TabPopUp() {
                     <OpenModal handelSubmit={handelSubmit}/>
                 </GridItem>
                 <GridItem colSpan={5}>
-                    <Tabs isFitted>
+                    <Tabs index={tabIndex} onChange={(index) => handleTabsChange(index)} isFitted>
                         <TabList>
                             {
-                                days.map((d) => <Tab onClick={() => handelDay(d.fullDay)} key={d.day}>{d.day}</Tab>)
+                                days.map((d) => <Tab key={d.day}>{d.day}</Tab>)
                             }
                         </TabList>
                         <TabPanels >

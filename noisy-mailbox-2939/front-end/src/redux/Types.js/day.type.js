@@ -1,0 +1,6 @@
+export const incrementDayIndex = 'tabIndex/increment'
+export const decrementDayIndex = 'tabIndex/decrement'
+export const setTabDayIndex = 'tabIndex/set'
+export const incrementDate = 'date/increment'
+export const decrementDate = 'date/decrement'
+export const setDateType = 'date/set'
