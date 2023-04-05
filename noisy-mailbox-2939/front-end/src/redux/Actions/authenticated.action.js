@@ -3,6 +3,7 @@ import {
     SIGNIN_ERROR, 
     SIGNIN_LOADING, 
     SIGNIN_SUCCESS, 
+    SIGNOUT_SUCCESS, 
     SIGNUP_ERROR, 
     SIGNUP_LOADING, 
     SIGNUP_SUCCESS
@@ -59,4 +60,8 @@ export const userSignIn = (credential , toast , cookie) => async (dispatch) => {
             status: 'error'
           })
     }
+}
+
+export const userSignOut = (removeCookie) => (dispatch) => {
+    dispatch({type : SIGNOUT_SUCCESS , payload : removeCookie})
 }

@@ -1,4 +1,5 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { userModel } = require('../models/user.models');
 
 const authMiddleWare = async (req, res, next) => {
 
@@ -6,16 +7,35 @@ const authMiddleWare = async (req, res, next) => {
 
     const decoded = token && jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
 
-        if (err) return res.status(401).json({ message: "You're not authorised for this action" })
+        if (err) return res.status(401).json({ message: "Token is not correct , Please pass correct token" })
 
         return decoded
     });
 
-    if (decoded) {
-        req.userId = decoded.userId
-        next()
-    } else {
-        return res.status(401).send({ message: 'Please login to access the endpoint' })
+    try {
+
+        if (decoded) {
+            const isValidUser = await userModel.findOne({
+                $or: [
+                    { oauthid: decoded.userId },
+                    { id: decoded.userId }
+                ]
+            })
+
+            if (isValidUser) {
+                req.userId = decoded.userId
+                next()
+            } else {
+                return res.status(401).json({ message: "You're not Authorized for this action" })
+            }
+            
+        } else {
+        return res.status(401).json({ message: "Please login to access the API endpoint" })
+
+        }
+
+    } catch (error) {
+        console.log(error)
     }
 
 }

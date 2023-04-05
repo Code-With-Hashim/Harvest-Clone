@@ -13,14 +13,41 @@ import {
 
 } from '@chakra-ui/react'
 import UserAvatar from './UserAvatar'
-import { useContext } from 'react'
-import { AuthContext } from '../Context/AuthContext'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie'
+import Cookies from "js-cookie"
+import { useDispatch } from 'react-redux'
+import { userSignOut } from '../redux/Actions/authenticated.action'
+
+async function getUserDetail (url , token) {
+
+
+    const {data} = await axios.get(url , {
+        headers : {
+            Authorization : `Bearer ${token.jwt}`
+        }
+    })
+
+    return data
+
+}
 
 export default function Trigger() {
 
-    const {token , setAuth} = useContext(AuthContext)
-
+    
      const {isOpen , onClose , onToggle} = useDisclosure()
+     const [tokenCookie , setTokenCookie , removeTokenCookie] = useCookies(['jwt'])
+     const [userDetail , setUserDetail] = useState({})
+     const dispatch = useDispatch()
+
+     
+     useEffect(() => {
+       getUserDetail(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth/user-detail` , tokenCookie)
+        .then(res => setUserDetail(res))
+        .catch(err => console.log(err))
+     }, [])
+
 
     return (
         
@@ -32,7 +59,7 @@ export default function Trigger() {
         >
             <PopoverTrigger>
             <AvatarGroup >
-                <Avatar onClick={onToggle} size='sm' bg='teal.500' />
+                <Avatar name={userDetail && userDetail.fullName && userDetail.fullName.firstName} src={userDetail && userDetail.avatar && userDetail.avatar} onClick={onToggle} size='sm' bg='teal.500' />
             </AvatarGroup>                
             </PopoverTrigger>
             <Portal >
@@ -40,15 +67,15 @@ export default function Trigger() {
                     <PopoverArrow />
                     
                     <Box mx='5' as='b' my='2' display='flex' justifyContent={'space-between'} alignItems='center'>
-                        <UserAvatar />
-                        <Text >{token}</Text>
+                        <UserAvatar props={userDetail && userDetail.avatar && userDetail} />
+                        <Text >{userDetail && userDetail.fullName && userDetail.fullName.firstName+" "+userDetail.fullName.lastName}</Text>
                     </Box>
-                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>My Profile</Text>
-                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>My Time Report</Text>
-                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>Notification</Text>
-                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' }} py='1' px='2'>Refer a friend</Text>
+                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' , cursor : 'pointer'}} py='1' px='2'>My Profile</Text>
+                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' , cursor : 'pointer'}} py='1' px='2'>My Time Report</Text>
+                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' , cursor : 'pointer'}} py='1' px='2'>Notification</Text>
+                        <Text _hover={{bgColor : 'black', color : 'white' , w : 'full' , cursor : 'pointer'}} py='1' px='2'>Refer a friend</Text>
                    <Divider />
-                   <Text onClick={()=>setAuth(false)} _hover={{bgColor : 'black', color : 'white' , w : 'full' }} my='4' px='2' py='1' >Sign Out</Text>
+                   <Text onClick={() => dispatch(userSignOut(Cookies.remove))} _hover={{bgColor : 'black', color : 'white' , w : 'full' , cursor : 'pointer' }} my='4' px='2' py='1' >Sign Out</Text>
                 </PopoverContent>
             </Portal>
         </Popover>

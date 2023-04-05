@@ -1,6 +1,6 @@
-import { SIGNIN_ERROR, SIGNIN_LOADING, SIGNIN_SUCCESS, SIGNUP_ERROR, SIGNUP_LOADING, SIGNUP_SUCCESS } from "../Types.js/authenticated.type"
+import { SIGNIN_ERROR, SIGNIN_LOADING, SIGNIN_SUCCESS, SIGNOUT_SUCCESS, SIGNUP_ERROR, SIGNUP_LOADING, SIGNUP_SUCCESS } from "../Types.js/authenticated.type"
 
-const token = document.cookie.split('jwt-token=')[1]
+const token = document.cookie.split('jwt=')[1]
 
 const initState = {
     auth : !!token,
@@ -40,7 +40,7 @@ export const authReducer = (state = initState , {type , payload}) => {
 
         case SIGNIN_SUCCESS : {
 
-            payload.cookie('jwt-token' , payload.token , {
+            payload.cookie('jwt' , payload.token , {
                 maxAge : 24 * 60 * 60 * 1000
             })
             console.log(payload)
@@ -66,6 +66,14 @@ export const authReducer = (state = initState , {type , payload}) => {
                 ...state,
                 loading : true,
                 error : false
+            }
+        }
+
+        case SIGNOUT_SUCCESS : {
+            payload('jwt')
+            return {
+                 ...state,
+                 auth : false,
             }
         }
 

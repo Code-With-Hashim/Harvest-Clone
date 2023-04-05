@@ -112,7 +112,7 @@ export default function Signup() {
 
     const handleSignIn = async  () => {
 
-        window.location.href = 'http://localhost:8080/auth/google';
+        window.open('http://localhost:8080/auth/google', 'google-sign-in', 'width=500,height=500');
 
     }
 

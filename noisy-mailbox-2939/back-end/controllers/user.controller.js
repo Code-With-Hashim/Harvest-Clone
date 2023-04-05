@@ -70,11 +70,36 @@ const userLogin = async (req, res) => {
 
 const googleAuthCallback = (req, res) => {
     // Redirect user to frontend with the JWT token as a cookie
-    res.cookie('jwt-token', req.user.token);
-    res.redirect('http://localhost:3000/harvest/signin');
+    res.cookie('jwt', req.user.token);
+    // res.redirect('http://localhost:3000/harvest/signin');
+    res.send('<script>window.opener.location.href="http://localhost:3000/harvest/signin"; window.close();</script>');
 
 }
 
+const getUserDetail = async (req , res) => {
+
+    try {
+
+        const isUserValid = await userModel.findOne({
+            $or : [
+                {oauthid : req.userId},
+                {id : req.userId}
+            ]
+        })
+
+        if (isUserValid) {
+            
+            return res.json({
+                fullName : isUserValid.fullName,
+                avatar : isUserValid.avatar,
+                email : isUserValid.email
+            })
+        }
+        
+    } catch (error) {
+        console.log(error)
+    }
+} 
 
 
-module.exports = { userSignup, userLogin , googleAuthCallback }
+module.exports = { userSignup, userLogin , googleAuthCallback , getUserDetail }

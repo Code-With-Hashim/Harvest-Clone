@@ -9,7 +9,8 @@ module.exports = (passport) => {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET_KEY,
         callbackURL: 'http://localhost:8080/auth/google/callback',
-        scope: ['profiel', 'email'],
+        prompt: 'consent',
+        scope: ['profile', 'email'],
         state: true
     },
         async function (accessToken, refreshToken, profile, done) {
@@ -27,21 +28,21 @@ module.exports = (passport) => {
                 //     email_verified: true,
                 //     locale: 'en'
                 //   }
-                const isExistUser = await userModel.findOne({email : profile._json.email})
+                const isExistUser = await userModel.findOne({ email: profile._json.email })
 
                 if (isExistUser) {
                     const token = jwt.sign({ userId: isExistUser.oauthid }, process.env.SECRET_KEY)
                     return done(null, { token: token })
                 } else {
                     await userModel.create({
-                        oauthid : profile._json.sub,
-                        email : profile._json.email,
-                        avatar : profile._json.picture,
-                        fullName : {
-                            firstName : profile._json.given_name,
-                            lastName : profile._json.family_name
+                        oauthid: profile._json.sub,
+                        email: profile._json.email,
+                        avatar: profile._json.picture,
+                        fullName: {
+                            firstName: profile._json.given_name,
+                            lastName: profile._json.family_name
                         },
-                        oauthProvider : 'google'
+                        oauthProvider: 'google'
 
                     })
                     const token = jwt.sign({ userId: profile._json.sub }, process.env.SECRET_KEY)

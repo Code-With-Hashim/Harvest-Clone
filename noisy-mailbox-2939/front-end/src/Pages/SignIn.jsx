@@ -20,9 +20,10 @@ export default function SignIn() {
     const [userCreds, setUserCreds] = React.useState(initalState)
     const dispatch = useDispatch()
     const toast = useToast()
-    const [cookieToken, setCookieToken] = useCookies(['jwt-token'])
+    const [cookieToken, setCookieToken] = useCookies(['jwt'])
     const { loading  , auth } = useSelector(({ authReducer }) => authReducer)
     const [show, setShow] = React.useState(false)
+    const [throttling , setThrottling] = React.useState(true)
 
 
 
@@ -34,11 +35,32 @@ export default function SignIn() {
     }
 
     const handelClick = () => {
-        dispatch(userSignIn(userCreds, toast, setCookieToken))
+        if(throttling) {
+            if([userCreds.email , userCreds.password].includes("")) {
+                toast({
+                    title: 'Email and Password is Mandatory , Please filled it',
+                    variant: 'left-accent',
+                    isClosable: true,
+                    position : 'top',
+                    status: 'error'
+                  })
+            } else {
+                dispatch(userSignIn(userCreds, toast, setCookieToken))
+            }
+
+            setThrottling(false)
+
+            setTimeout(() => {
+                setThrottling(true)
+            }, 2000)
+        }
     }
 
     const handleSignIn = () => {
-        window.location.href = 'http://localhost:8080/auth/google';
+
+        window.open('http://localhost:8080/auth/google', 'google-sign-in', 'width=500,height=500');
+
+        
     }
 
     if(auth) return <Navigate to={'/harvest/dashboard/time'} />
@@ -70,7 +92,7 @@ export default function SignIn() {
                         <Box display='grid' rowGap={5} my='12'>
                             <Input name='email' value={userCreds.email} onChange={handelInput} w='full' bgColor='white' placeholder='Work Email' />
                             <InputGroup>
-                                <Input name='password' value={userCreds.password} type={show ? 'password' : 'text'} onChange={handelInput} w='full' bgColor='white' placeholder='Password' />
+                                <Input name='password' value={userCreds.password} type={show ? 'text' : 'password'} onChange={handelInput} w='full' bgColor='white' placeholder='Password' />
                                 <InputRightElement onClick={() => setShow(!show)} children={show ? <AiOutlineEyeInvisible /> : <AiOutlineEye />} />
                             </InputGroup>
                         </Box>

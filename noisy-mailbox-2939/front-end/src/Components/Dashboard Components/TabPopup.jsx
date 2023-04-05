@@ -125,7 +125,7 @@ const postData = (task,Day) => {
 
 function OpenModal() {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { isDay } = useContext(AuthContext)
+
     const [data, setData] = useState(initalState)
 
     const handelData = (e) => {
@@ -134,13 +134,13 @@ function OpenModal() {
         setData({ ...data, [name]: value })
     }
 
-    const handelSubmit = () => {
-        postData(data, isDay.toLowerCase())
-        .then((res)=>console.log(res))
-        .catch((err)=>console.log(err));
-        onClose()
+    // const handelSubmit = () => {
+    //     postData(data, isDay.toLowerCase())
+    //     .then((res)=>console.log(res))
+    //     .catch((err)=>console.log(err));
+    //     onClose()
         
-    }
+    // }
 
     return (
         <>
@@ -149,7 +149,7 @@ function OpenModal() {
                 <Modal onClose={onClose} size={'xl'} isOpen={isOpen}>
                     <ModalOverlay />
                     <ModalContent>
-                        <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center>
+                        {/* <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center> */}
                         <ModalBody>
                             <FormControl rowGap={2}>
                                 <FormLabel>Project/Task</
@@ -182,7 +182,7 @@ function OpenModal() {
                             </FormControl>
                         </ModalBody>
                         <ModalFooter display={'flex'} justifyContent='left' gap='5'>
-                            <Button onClick={handelSubmit} colorScheme={'green'}>Start timer</Button>
+                            {/* <Button onClick={handelSubmit} colorScheme={'green'}>Start timer</Button> */}
                             <Button onClick={onClose}>Cancel</Button>
                         </ModalFooter>
                     </ModalContent>
@@ -234,7 +234,6 @@ function TabDataList({Data}) {
 
 function EditModal({id}) {
 const { isOpen, onOpen, onClose } = useDisclosure()
-const { isDay } = useContext(AuthContext)
 const [data, setData] = useState(initalState)
 
 const handelData = (e) => {
@@ -243,18 +242,18 @@ const handelData = (e) => {
     setData({ ...data, [name]: value })
 }
 
-const handelUpdate = () => {
-    axios.patch(`https://harvest-mock-server-data.onrender.com/${isDay}/${id}`, data)
-    onClose()
-}
+// const handelUpdate = () => {
+//     axios.patch(`https://harvest-mock-server-data.onrender.com/${isDay}/${id}`, data)
+//     onClose()
+// }
 
-const handelDelete = () => {
-    axios.delete(`https://harvest-mock-server-data.onrender.com/
-    ${isDay}/${id}`);
-    onClose();
-    <TabPopUp></TabPopUp>;
-    <TabDataList></TabDataList>
-}
+// const handelDelete = () => {
+//     axios.delete(`https://harvest-mock-server-data.onrender.com/
+//     ${isDay}/${id}`);
+//     onClose();
+//     <TabPopUp></TabPopUp>;
+//     <TabDataList></TabDataList>
+// }
 
 
     return (
@@ -264,7 +263,7 @@ const handelDelete = () => {
             <Modal onClose={onClose} size={'xl'} isOpen={isOpen}>
                 <ModalOverlay />
                 <ModalContent>
-                    <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center>
+                    {/* <Center bgColor={'gray.200'}><Text as='b' my='2'>New Time entry for {isDay}</Text></Center> */}
                     <ModalBody>
                         <FormControl rowGap={2}>
                             <FormLabel>Project/Task</
@@ -297,9 +296,9 @@ const handelDelete = () => {
                         </FormControl>
                     </ModalBody>
                     <ModalFooter display={'flex'} justifyContent='left' gap='5'>
-                        <Button onClick={handelUpdate} colorScheme={'green'}>Update timer</Button>
+                        {/* <Button onClick={handelUpdate} colorScheme={'green'}>Update timer</Button> */}
                         <Button onClick={onClose}>Cancel</Button>
-                        <Button colorScheme={'red'} onClick={handelDelete}>Delete</Button>
+                        {/* <Button colorScheme={'red'} onClick={handelDelete}>Delete</Button> */}
                     </ModalFooter>
                 </ModalContent>
             </Modal>
